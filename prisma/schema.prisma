@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum SiteColour {
+  GREEN
+  YELLOW
+  RED
+  GREY
+}
+
+enum SignLevel {
+  RED
+  YELLOW
+}
+
+model Site {
+  id           Int        @id @default(autoincrement())
+  address      String
+  chain        Int
+  containerAddress String?
+  name         String?
+  category     String?
+  active       Boolean    @default(true)
+  colour       SiteColour @default(GREY)
+  lastChecked  DateTime?
+  lastChanged  DateTime?
+  overrideNote String?
+
+  files          File[]
+  signs          Sign[]
+  mistakeReports MistakeReport[]
+
+  @@unique([chain, address])
+  @@unique([chain, containerAddress])
+  @@index([chain])
+  @@index([colour])
+}
+
+model File {
+  id          Int      @id @default(autoincrement())
+  siteId      Int
+  path        String
+  type        String
+  size        Int
+  fingerprint String
+  lastSeen    DateTime @default(now())
+
+  site  Site   @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  signs Sign[]
+
+  @@unique([siteId, path])
+  @@index([fingerprint])
+}
+
+model Sign {
+  id            Int       @id @default(autoincrement())
+  siteId        Int
+  fileId        Int
+  checkId       String
+  level         SignLevel
+  shortEvidence String    @db.Text
+
+  site Site @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  file File @relation(fields: [fileId], references: [id], onDelete: Cascade)
+
+  @@index([siteId, level])
+}
+
+model Scan {
+  id           Int       @id @default(autoincrement())
+  startedAt    DateTime  @default(now())
+  endedAt      DateTime?
+  sitesChecked Int       @default(0)
+  sitesChanged Int       @default(0)
+  sitesFound   Int       @default(0)
+  sitesAdded   Int       @default(0)
+  sitesUpdated Int       @default(0)
+  status       String    @default("COMPLETE")
+  errors       Json?
+
+  @@index([startedAt])
+}
+
+model MistakeReport {
+  id        Int      @id @default(autoincrement())
+  siteId    Int
+  message   String   @db.Text
+  contact   String?
+  date      DateTime @default(now())
+  status    String   @default("PENDING")
+
+  site Site @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@index([status, date])
+}

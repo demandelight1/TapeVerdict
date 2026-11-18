@@ -1,0 +1,20 @@
+# Cloudflare Workers 静态托管配置：把 dist/gateway 当静态资源发布，未知路径一律回落到 index.html（网关的引导页规则）。
+# 部署：npm run build:gateway && npx wrangler deploy ；域名路由 tapekit.org/* 与 *.tapekit.org/* 在 Cloudflare 面板或下面 routes 里配。
+name = "tapekit-gateway"
+compatibility_date = "2025-09-01"
+main = "sw-gateway/worker.js"
+
+routes = [
+  { pattern = "tapekit.org/*", zone_name = "tapekit.org" },
+  { pattern = "*.tapekit.org/*", zone_name = "tapekit.org" },
+]
+
+[assets]
+# 所有请求先过 Worker：否则 Cloudflare 直接发静态文件，worker.js 补的 nosniff 和 CSP 对真实文件全都不生效
+# （审计 2026-09-20 实测：/sw.js、/.tape/config.json 线上都没有这两个头）
+run_worker_first = true
+directory = "dist/gateway"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+html_handling = "none"
+

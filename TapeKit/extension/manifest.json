@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "tape:// 链上网站",
+  "version": "0.3.0",
+  "description": "直接从 BNB Chain、X Layer、Base 读取并校验链上网站；也能校验当前网页是否与链上发布的字节一致。",
+  "action": {
+    "default_title": "tape:// 链上网站",
+    "default_popup": "popup/popup.html"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "omnibox": {
+    "keyword": "tape"
+  },
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "sandbox": {
+    "pages": [
+      "viewer/frame.html"
+    ]
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; base-uri 'none'; form-action 'none'",
+    "sandbox": "sandbox allow-scripts; default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' blob:; style-src 'unsafe-inline' blob: https:; img-src blob: data: https:; font-src blob: data: https:; media-src blob: data: https:; connect-src blob: data: https: wss:; worker-src blob:; frame-src blob: https:; form-action 'none'"
+  }
+}

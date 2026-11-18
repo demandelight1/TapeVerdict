@@ -1,0 +1,26 @@
+{
+  "name": "tapeverdict",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "phase0": "node scripts/phase0.js",
+    "phase1:test": "node scripts/phase1-test.js",
+    "phase2:discover": "node scripts/phase2-discover.js",
+    "phase2:test": "node --test scripts/phase2-discover.test.js"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.10.0",
+    "@prisma/client": "^7.10.0",
+    "dotenv": "^18.0.10",
+    "next": "^16.4.6",
+    "pg": "^8.23.1",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "prisma": "^7.10.0"
+  }
+}
